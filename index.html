@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Drag Bike — Balap Motor 402m</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ MENU UTAMA ============ -->
+  <section id="screen-menu" class="screen active">
+    <div class="logo">
+      <h1>DRAG<span>BIKE</span></h1>
+      <p class="tagline">Balap Motor 402 Meter — Mabar Bareng Teman!</p>
+    </div>
+    <div class="menu-coins">🪙 Koin: <b id="menu-coins">0</b></div>
+    <div class="menu-stats" id="menu-stats">Top Speed: - km/jam &nbsp;•&nbsp; 0-100: - dtk</div>
+    <div class="menu-buttons">
+      <button class="btn btn-primary" id="btn-race">🏁 BALAP</button>
+      <button class="btn btn-primary" id="btn-multi">👥 MABAR</button>
+      <button class="btn btn-primary" id="btn-garage">🔧 GARASI</button>
+      <button class="btn btn-primary" id="btn-howto">❓ CARA MAIN</button>
+    </div>
+    <p class="footer">v1.0 • Rp0 • Tanpa iklan • Dibuat dengan canvas &amp; WebAudio</p>
+  </section>
+
+  <!-- ============ LAYAR BALAP ============ -->
+  <section id="screen-race" class="screen">
+    <div class="race-top">
+      <button class="btn btn-small" id="btn-race-quit">← Menu</button>
+      <div class="race-info">
+        <span id="race-title">Drag Race 402m</span>
+        <span id="race-opponent"></span>
+      </div>
+      <div class="race-time">⏱ <span id="race-clock">0.00</span> dtk</div>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="race-canvas" width="960" height="420"></canvas>
+      <div id="countdown-overlay" class="countdown hidden">3</div>
+      <div id="false-start" class="false-start hidden">⚠ FALSE START!</div>
+    </div>
+
+    <div class="hud">
+      <div class="hud-row">
+        <div class="hud-box"><label>KECEPATAN</label><div class="big"><span id="speed-text">0</span> <small>km/jam</small></div></div>
+        <div class="hud-box"><label>GIGI</label><div class="big gear" id="gear-text">N</div></div>
+        <div class="hud-box"><label>JARAK</label><div class="big"><span id="dist-text">0</span> <small>/ 402 m</small></div></div>
+        <div class="hud-box"><label>REAKSI</label><div class="big"><span id="react-text">-</span></div></div>
+      </div>
+      <div class="hud-row">
+        <div class="gauge-box">
+          <label>RPM <span id="rpm-text">0</span></label>
+          <div class="rpm-bar"><div class="rpm-band"></div><div class="rpm-needle" id="rpm-needle"></div></div>
+          <div class="rpm-hint">Pindah gigi di zona HIJAU!</div>
+        </div>
+        <div class="gauge-box">
+          <label>NITRO <span id="nitro-text">-</span></label>
+          <div class="nitro-bar"><div class="nitro-fill" id="nitro-fill"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="touch-controls" id="touch-single">
+      <button class="touch-btn gas" id="touch-gas">⛽ GAS</button>
+      <button class="touch-btn gear" id="touch-gear">⚙ GIGI</button>
+      <button class="touch-btn nitro" id="touch-nitro">💨 NITRO</button>
+    </div>
+
+    <div class="touch-controls two-player hidden" id="touch-duo">
+      <div class="touch-group">
+        <span class="touch-label">PEMAIN 1 (A/S/D)</span>
+        <button class="touch-btn gas" id="touch-p1-gas">⛽ GAS</button>
+        <button class="touch-btn gear" id="touch-p1-gear">⚙ GIGI</button>
+        <button class="touch-btn nitro" id="touch-p1-nitro">💨 NITRO</button>
+      </div>
+      <div class="touch-group">
+        <span class="touch-label">PEMAIN 2 (↑/→/Enter)</span>
+        <button class="touch-btn gas" id="touch-p2-gas">⛽ GAS</button>
+        <button class="touch-btn gear" id="touch-p2-gear">⚙ GIGI</button>
+        <button class="touch-btn nitro" id="touch-p2-nitro">💨 NITRO</button>
+      </div>
+    </div>
+
+    <!-- Panel hasil -->
+    <div id="result-panel" class="result-panel hidden">
+      <h2 id="result-title">🏆 MENANG!</h2>
+      <div class="result-rows">
+        <div>Waktu tempuh: <b id="result-time">-</b></div>
+        <div>Kecepatan akhir: <b id="result-speed">-</b></div>
+        <div>Reaction time: <b id="result-react">-</b></div>
+        <div>Koin didapat: <b id="result-coins">+0 🪙</b></div>
+      </div>
+      <div id="result-podium" class="podium"></div>
+      <div class="result-buttons">
+        <button class="btn btn-primary" id="btn-race-again">🔄 BALAP LAGI</button>
+        <button class="btn" id="btn-race-menu">🏠 MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GARASI ============ -->
+  <section id="screen-garage" class="screen">
+    <h2 class="screen-title">🔧 GARASI — Build Motormu</h2>
+    <div class="menu-coins">🪙 Koin: <b id="garage-coins">0</b></div>
+    <div class="garage-stats">
+      <div>Top Speed: <b id="stat-top">-</b></div>
+      <div>0-100 km/jam: <b id="stat-0100">-</b></div>
+      <div>Durasi Nitro: <b id="stat-nitro">-</b></div>
+    </div>
+    <div class="upgrade-grid" id="upgrade-grid"></div>
+    <button class="btn" id="btn-garage-back">← Kembali</button>
+  </section>
+
+  <!-- ============ CARA MAIN ============ -->
+  <section id="screen-howto" class="screen">
+    <h2 class="screen-title">❓ CARA MAIN</h2>
+    <div class="howto">
+      <h3>🏁 Balap Drag 402m</h3>
+      <p>Lampu menyala 3-2-1 lalu <b>GO!</b>. Tekan GAS tepat saat GO — reaksi cepat = start cepat. Gas sebelum GO = <b>FALSE START</b> dan langsung kalah.</p>
+      <h3>⚙ Pindah Gigi</h3>
+      <p>Perhatikan jarum RPM. Pindah gigi saat jarum di <b>zona hijau</b> (power band) supaya akselerasi maksimal. Terlalu cepat = ngempos, terlalu lambat = mentok limiter.</p>
+      <h3>💨 Nitro</h3>
+      <p>Tekan NITRO untuk boost. Jumlahnya terbatas — pakai di saat yang tepat, biasanya di gigi 3-4 atau menjelang finis.</p>
+      <h3>🔧 Garasi</h3>
+      <p>Menang balapan dapat koin. Pakai koin untuk upgrade Mesin, Knalpot, Ban, dan Nitro (masing-masing 5 level).</p>
+      <h3>👥 Mabar</h3>
+      <p><b>Lokal:</b> 2 pemain di satu HP/laptop, layar split. <b>Online:</b> buat/gabung room pakai kode, balapan bareng lewat server.</p>
+      <h3>⌨️ Kontrol Keyboard</h3>
+      <ul>
+        <li>Pemain 1: <b>A</b> gas • <b>S</b> gigi • <b>D</b> nitro</li>
+        <li>Pemain 2: <b>↑</b> gas • <b>→</b> gigi • <b>Enter</b> nitro</li>
+        <li>Balap sendiri: <b>Spasi</b> gas • <b>Shift</b> gigi • <b>N</b> nitro (atau A/S/D)</li>
+      </ul>
+      <h3>📱 Kontrol Sentuh</h3>
+      <p>Tombol GAS / GIGI / NITRO besar di bawah layar. Tahan GAS, ketuk GIGI &amp; NITRO.</p>
+    </div>
+    <button class="btn" id="btn-howto-back">← Kembali</button>
+  </section>
+
+  <!-- ============ MABAR ============ -->
+  <section id="screen-multi" class="screen">
+    <h2 class="screen-title">👥 MABAR — Main Bareng</h2>
+    <div class="tabs">
+      <button class="tab active" id="tab-local">📱 Lokal (1 Perangkat)</button>
+      <button class="tab" id="tab-online">🌐 Online (Room)</button>
+    </div>
+
+    <div id="panel-local" class="multi-panel">
+      <p>Dua pemain balapan di satu layar (split). Pemain 1 pakai <b>A/S/D</b>, Pemain 2 pakai <b>↑/→/Enter</b>. Di HP, pakai tombol sentuh di bawah layar.</p>
+      <div class="multi-names">
+        <label>Nama P1: <input id="local-name1" value="Rider 1" maxlength="12"></label>
+        <label>Nama P2: <input id="local-name2" value="Rider 2" maxlength="12"></label>
+      </div>
+      <button class="btn btn-primary" id="btn-local-start">🏁 MULAI BALAPAN 2P</button>
+    </div>
+
+    <div id="panel-online" class="multi-panel hidden">
+      <p>Balapan online lewat server WebSocket. Satu orang buat room, yang lain gabung pakai kode room.</p>
+      <label>Nama kamu: <input id="online-name" value="Rider" maxlength="12"></label>
+      <label>Server WebSocket: <input id="online-server" value="ws://localhost:8080"></label>
+      <label>Kode Room: <input id="online-room" placeholder="mis. DRAG123" maxlength="10"></label>
+      <div class="online-buttons">
+        <button class="btn btn-primary" id="btn-create-room">➕ BUAT ROOM</button>
+        <button class="btn btn-primary" id="btn-join-room">🔗 GABUNG ROOM</button>
+      </div>
+      <div id="online-status" class="online-status">Belum terhubung.</div>
+      <div id="player-list" class="player-list"></div>
+      <button class="btn btn-primary hidden" id="btn-online-start">🏁 MULAI BALAPAN (HOST)</button>
+    </div>
+
+    <button class="btn" id="btn-multi-back">← Kembali</button>
+  </section>
+
+  <!-- ============ PILIH LAWAN (BOT) ============ -->
+  <section id="screen-bots" class="screen">
+    <h2 class="screen-title">🏁 Pilih Lawan</h2>
+    <p>Lawan bot AI — makin sulit, makin besar hadiah koinnya.</p>
+    <div class="bot-grid" id="bot-grid"></div>
+    <button class="btn" id="btn-bots-back">← Kembali</button>
+  </section>
+
+</div>
+<script src="game.js"></script>
+</body>
+</html>
