@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Drag Bike — Balap Motor 402m</title>
+<title>Drag Bike 3D — Balap Motor 402m</title>
 <link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
 </head>
 <body>
 <div id="app">
@@ -12,8 +15,8 @@
   <!-- ============ MENU UTAMA ============ -->
   <section id="screen-menu" class="screen active">
     <div class="logo">
-      <h1>DRAG<span>BIKE</span></h1>
-      <p class="tagline">Balap Motor 402 Meter — Mabar Bareng Teman!</p>
+      <h1>DRAG<span>BIKE</span> <span class="badge-3d">3D</span></h1>
+      <p class="tagline">Balap Motor 402 Meter — 3D Beneran, Mabar Bareng Teman!</p>
     </div>
     <div class="menu-coins">🪙 Koin: <b id="menu-coins">0</b></div>
     <div class="menu-stats" id="menu-stats">Top Speed: - km/jam &nbsp;•&nbsp; 0-100: - dtk</div>
@@ -23,7 +26,7 @@
       <button class="btn btn-primary" id="btn-garage">🔧 GARASI</button>
       <button class="btn btn-primary" id="btn-howto">❓ CARA MAIN</button>
     </div>
-    <p class="footer">v1.0 • Rp0 • Tanpa iklan • Dibuat dengan canvas &amp; WebAudio</p>
+    <p class="footer">v2.0 3D • Three.js (offline) • Rp0 • Tanpa iklan • WebGL + WebAudio</p>
   </section>
 
   <!-- ============ LAYAR BALAP ============ -->
@@ -34,11 +37,12 @@
         <span id="race-title">Drag Race 402m</span>
         <span id="race-opponent"></span>
       </div>
+      <button class="btn btn-small" id="btn-cam">📷 Kamera</button>
       <div class="race-time">⏱ <span id="race-clock">0.00</span> dtk</div>
     </div>
 
     <div class="canvas-wrap">
-      <canvas id="race-canvas" width="960" height="420"></canvas>
+      <div id="gl-wrap"></div>
       <div id="countdown-overlay" class="countdown hidden">3</div>
       <div id="false-start" class="false-start hidden">⚠ FALSE START!</div>
     </div>
@@ -128,6 +132,8 @@
       <p>Menang balapan dapat koin. Pakai koin untuk upgrade Mesin, Knalpot, Ban, dan Nitro (masing-masing 5 level).</p>
       <h3>👥 Mabar</h3>
       <p><b>Lokal:</b> 2 pemain di satu HP/laptop, layar split. <b>Online:</b> buat/gabung room pakai kode, balapan bareng lewat server.</p>
+      <h3>📷 Kamera 3D</h3>
+      <p>Kamera mengikuti dari belakang motormu. Tekan <b>C</b> atau tombol <b>📷 Kamera</b> untuk ganti ke kamera samping. Di mabar lokal, layar terbagi dua (atas P1, bawah P2).</p>
       <h3>⌨️ Kontrol Keyboard</h3>
       <ul>
         <li>Pemain 1: <b>A</b> gas • <b>S</b> gigi • <b>D</b> nitro</li>
@@ -183,6 +189,6 @@
   </section>
 
 </div>
-<script src="game.js"></script>
+<script type="module" src="js/main.mjs"></script>
 </body>
 </html>

@@ -1,14 +1,14 @@
-# 🏍️ DRAG BIKE
+# 🏍️ DRAG BIKE 3D
 
-Game balap motor **drag race 402 meter (quarter mile)** yang bisa **mabar** — lawan bot AI, duel 2 pemain di satu perangkat, atau balapan online bareng teman lewat room.
+Game balap motor **3D beneran (Three.js / WebGL)** — drag race 402 meter (quarter mile) yang bisa **mabar**: lawan bot AI, duel 2 pemain di satu perangkat (split-screen), atau balapan online bareng teman lewat room.
 
-Semua grafis digambar dengan canvas/CSS (tanpa aset eksternal), suara mesin dari WebAudio (tanpa file audio). Bisa dibuka langsung dari `index.html` tanpa build step, dan bisa dibungkus jadi **APK Android** lewat Capacitor + GitHub Actions.
+Semua model 3D dibangun dari primitif Three.js (kotak, silinder, torus, bola) — **tanpa download model/tekstur**. Three.js r160 di-vendor secara lokal di `vendor/three.module.min.js`, jadi game jalan **offline penuh** (tanpa CDN) di browser maupun APK. Suara mesin dari WebAudio (tanpa file audio). Bisa dibungkus jadi **APK Android** lewat Capacitor + GitHub Actions.
 
 ## 🎮 Cara Main
 
-1. Buka `index.html` di browser (atau jalankan server statis, lihat bawah).
-2. Di menu utama pilih **BALAP** (lawan bot), **MABAR** (2 pemain / online), **GARASI** (upgrade motor), atau **CARA MAIN**.
-3. Lampu menyala **3-2-1 lalu GO!** — tekan GAS tepat saat GO.
+1. Jalankan server statis (lihat bawah — file `index.html` harus disajikan via HTTP karena game memakai ES module), lalu buka di browser.
+2. Di menu utama pilih **BALAP** (lawan bot), **MABAR** (2 pemain / online), **GARASI** (upgrade motor), atau **CARA MAIN**. Di menu, motormu dipamerkan berputar di sirkuit 3D.
+3. Lampu gantry 3D menyala **3-2-1 lalu GO!** (hijau) — tekan GAS tepat saat GO.
    - Gas sebelum GO = **FALSE START** → langsung kalah.
    - Reaction time (waktu reaksimu) tercatat di HUD.
 4. Tahan GAS, perhatikan **RPM**: pindah gigi saat jarum di **zona hijau** (power band) supaya akselerasi maksimal.
@@ -25,6 +25,10 @@ Semua grafis digambar dengan canvas/CSS (tanpa aset eksternal), suara mesin dari
 | Dedi Petir | Legenda | 218 km/jam | 500 🪙 |
 
 Kalah pun tetap dapat 25 🪙 (semangat!).
+
+## 📷 Kamera 3D
+
+Kamera chase-cam mengikuti dari belakang motormu (ada getaran halus saat RPM tinggi + wheelie sedikit saat launch). Tekan **`C`** atau tombol **📷 Kamera** untuk ganti ke kamera samping. Di mabar lokal, layar terbagi dua — atas Pemain 1, bawah Pemain 2 — masing-masing dengan kamera sendiri.
 
 ## ⌨️ Kontrol
 
@@ -47,14 +51,14 @@ Koin hasil balapan dipakai untuk upgrade (masing-masing 5 level). Koin & level t
 | 🛞 Ban | +6% grip saat start, +2% akselerasi | 100 🪙 |
 | 💨 Nitro | +0,5 detik durasi nitro | 100 🪙 |
 
-Biaya naik tiap level (level berikutnya = biaya awal × level). Stat motor (top speed & waktu 0–100 km/jam) tampil di menu dan garasi.
+Biaya naik tiap level (level berikutnya = biaya awal × level). Stat motor (top speed & waktu 0–100 km/jam) tampil di menu dan garasi. **Upgrade juga mengubah tampilan motor 3D**: knalpot makin besar (emas di level 4–5), ban makin tebal, mesin makin besar, dan botol nitro muncul di samping motor.
 
 ## 👥 Mabar (Main Bareng)
 
 ### Lokal — 2 pemain, 1 perangkat
 1. Menu → **MABAR** → tab **Lokal**.
 2. Isi nama Pemain 1 & Pemain 2, tekan **MULAI BALAPAN 2P**.
-3. Layar split jadi 2 lintasan. P1 pakai `A`/`S`/`D`, P2 pakai `↑`/`→`/`Enter`. Di HP pakai tombol sentuh kiri (P1) & kanan (P2).
+3. Layar split jadi 2 (atas P1, bawah P2), masing-masing kamera chase-cam sendiri. P1 pakai `A`/`S`/`D`, P2 pakai `↑`/`→`/`Enter`. Di HP pakai tombol sentuh kiri (P1) & kanan (P2).
 4. Pemenang dapat 150 🪙.
 
 ### Online — room + WebSocket
@@ -96,25 +100,22 @@ Konfigurasi Capacitor ada di `capacitor.config.json` (`appId: com.mayagent88.dra
 
 ## 🚀 Menjalankan Game di Lokal
 
-Tanpa build — cukup salah satu:
+Game memakai ES module + import map, jadi **harus disajikan via HTTP** (buka `index.html` langsung via `file://` tidak akan jalan karena aturan CORS module):
 
 ```bash
-# Opsi A: buka langsung
-# Klik dua kali index.html di file manager
-
-# Opsi B: server statis (disarankan, supaya localStorage & audio stabil)
+# Opsi A: server statis (paling gampang)
 python3 -m http.server 8000
 # lalu buka http://localhost:8000/
 
-# Opsi C: server Node (untuk mabar online sekaligus)
+# Opsi B: server Node (untuk mabar online sekaligus)
 node server.js
-# game: http://localhost:8080/ TIDAK menyajikan file game — server ini khusus WebSocket.
-# Sajikan index.html via Opsi B, lalu isi alamat server ws://localhost:8080 di tab Online.
+# server WebSocket jalan di ws://localhost:8080, tapi TIDAK menyajikan file game.
+# Sajikan index.html via Opsi A, lalu isi alamat server ws://localhost:8080 di tab Online.
 ```
 
 Cek cepat kode tidak error:
 ```bash
-npm run check   # node --check game.js && node --check server.js
+npm run check   # node --check untuk js/*.mjs + server.js
 ```
 
 ## 📁 Struktur File
@@ -123,7 +124,14 @@ npm run check   # node --check game.js && node --check server.js
 drag-bike/
 ├── index.html                  # Halaman utama game (menu, balapan, garasi, mabar)
 ├── style.css                   # Semua tampilan (responsif, tombol sentuh besar)
-├── game.js                     # Logika game: fisika, AI bot, render canvas, online
+├── js/
+│   ├── physics.mjs             # Fisika + data murni (bisa diuji di Node, tanpa DOM)
+│   ├── audio.mjs               # Suara mesin WebAudio
+│   ├── bike.mjs                # Model motor 3D + pool asap ban
+│   ├── track.mjs               # Sirkuit 3D: aspal, gantry, tribun, pohon, gedung
+│   └── main.mjs                # Logika game: balapan, bot, mabar, HUD, garasi
+├── vendor/
+│   └── three.module.min.js     # Three.js r160 (lokal, offline, tanpa CDN)
 ├── server.js                   # Server multiplayer WebSocket (Node, tanpa dependensi)
 ├── package.json                # Script start/check + devDeps Capacitor
 ├── capacitor.config.json       # Config APK (appId com.mayagent88.dragbike)
@@ -138,7 +146,7 @@ drag-bike/
 cd drag-bike
 git init
 git add .
-git commit -m "Drag Bike v1.0 — balap motor 402m, mabar lokal & online, APK-ready"
+git commit -m "Drag Bike v2.0 3D — Three.js, mabar lokal & online, APK-ready"
 git branch -M main
 git remote add origin https://github.com/<username>/drag-bike.git
 git push -u origin main
@@ -148,7 +156,8 @@ Setelah push, APK otomatis di-build oleh GitHub Actions (lihat Cara 1 di atas).
 
 ## ⚠️ Catatan
 
-- Game ini 100% orisinal, tanpa aset unduhan, tanpa iklan, tanpa akun, tanpa spend (Rp0).
+- Game ini 100% orisinal, tanpa aset unduhan, tanpa iklan, tanpa akun, tanpa spend (Rp0). Satu-satunya library eksternal adalah Three.js r160 yang di-vendor lokal di repo (MIT license) — game tetap jalan offline.
+- Performa: 1 directional light + 1 hemisphere, tanpa shadow map, geometri low-poly, pixelRatio dibatasi 1.5 — target 60fps di HP mid-range.
 - Koin & upgrade tersimpan di `localStorage` per browser/perangkat — ganti browser = mulai dari nol.
 - Mabar online butuh server `server.js` yang sedang jalan dan bisa dijangkau semua pemain.
 - Suara mesin butuh interaksi dulu (klik/tekan tombol) — itu aturan browser, bukan bug.
