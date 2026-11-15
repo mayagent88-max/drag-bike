@@ -25,6 +25,11 @@ jobs:
           java-version: "17"
       - name: Install dependencies
         run: npm install
+      - name: Stage web files
+        run: |
+          mkdir -p www
+          cp index.html style.css www/
+          cp -r js vendor www/
       - name: Tambah platform Android (Capacitor)
         run: |
           if [ ! -d "android" ]; then
